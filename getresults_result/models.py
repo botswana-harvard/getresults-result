@@ -1,8 +1,9 @@
 from django.db import models
 
-from edc_base.model.models import BaseUuidModel, HistoricalRecords
-
+from edc_base.audit_trail import AuditTrail
+from edc_base.model.models import BaseUuidModel
 from getresults_order.models import Order, Utestid
+from getresults_identifier import ResultIdentifier
 
 from .choices import RESULT_ITEM_STATUS
 
@@ -45,10 +46,14 @@ class Result(BaseUuidModel):
 
     last_exported_datetime = models.DateTimeField(null=True)
 
-    history = HistoricalRecords()
+    history = AuditTrail()
 
     def __str__(self):
         return '{}: {}'.format(self.result_identifier, str(self.order))
+
+    def save(self, *args, **kwargs):
+        self.result_identifier = self.result_identifier or ResultIdentifier(self.order.order_identifier)
+        super(Result, self).save(*args, **kwargs)
 
     class _Meta:
         app_label = 'getresults_result'
@@ -96,7 +101,7 @@ class ResultItem(BaseUuidModel):
         null=True,
         help_text='For example, \'filename\' for CSV or \'ASTM\'')
 
-    history = HistoricalRecords()
+    history = AuditTrail()
 
     def __str__(self):
         return '{}: {}'.format(self.utestid, str(self.result))
