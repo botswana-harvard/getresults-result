@@ -13,14 +13,13 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
-from django.contrib import admin
-from getresults.admin import admin_site
-from getresults import urls as getresults_urls
-
-admin.autodiscover()
+from django.conf.urls import url
+from getresults_result.views import (
+    ResultSectionView, UnvalidatedResultsView, UnreleasedResultsView, ResultView, SaveValidationRedirectView)
 
 urlpatterns = [
-    url(r'^admin/', include(admin_site.urls)),
-    url(r'', include(getresults_urls)),
+    url(r'(?P<section_name>((validate)|(release)))/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', ResultView.as_view(), name='result_url'),
+    url(r'validate/$', UnvalidatedResultsView.as_view(), name='unvalidated_results_url'),
+    url(r'release/$', UnreleasedResultsView.as_view(), name='unreleased_results_url'),
+    url(r'', ResultSectionView.as_view(), name='result_home_url'),
 ]

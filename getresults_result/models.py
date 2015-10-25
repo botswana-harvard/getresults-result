@@ -1,11 +1,34 @@
+from uuid import uuid4
 from django.db import models
-
+from django.utils import timezone
 from edc_base.audit_trail import AuditTrail
 from edc_base.model.models import BaseUuidModel
 from getresults_order.models import Order, Utestid
 from getresults_identifier import ResultIdentifier
 
-from .choices import RESULT_ITEM_STATUS
+from .choices import RELEASE_OPTIONS
+
+VALIDATION_STATUS = (
+    ('pending', 'Pending'),
+    ('partial', 'Partial'),
+    ('validated', 'Validated'),
+    ('rejected', 'Rejected'),
+)
+
+RELEASE_STATUS = (
+    ('pending', 'Pending'),
+    ('partial', 'Partial'),
+    ('released', 'Released'),
+    ('rejected', 'Rejected'),
+)
+
+
+RESULT_ITEM_VALIDATION = (
+    ('accept', 'Accept'),
+    ('reject', 'Reject'),
+    ('repeat', 'Repeat'),
+    ('ignore', 'Ignore'),
+)
 
 
 class Result(BaseUuidModel):
@@ -38,13 +61,25 @@ class Result(BaseUuidModel):
         max_length=25,
         null=True)
 
-    validation_reference = models.CharField(
-        max_length=25,
-        null=True)
-
     last_exported = models.BooleanField(default=False)
 
     last_exported_datetime = models.DateTimeField(null=True)
+
+    validation_status = models.CharField(
+        max_length=10,
+        choices=VALIDATION_STATUS,
+        default='pending',
+        editable=False)
+
+    validation_datetime = models.DateTimeField(null=True)
+
+    release_status = models.CharField(
+        max_length=10,
+        choices=RELEASE_STATUS,
+        default='pending',
+        editable=False)
+
+    release_datetime = models.DateTimeField(null=True)
 
     history = AuditTrail()
 
@@ -84,11 +119,7 @@ class ResultItem(BaseUuidModel):
 
     status = models.CharField(
         max_length=10,
-        choices=RESULT_ITEM_STATUS,
-        null=True)
-
-    validation_reference = models.CharField(
-        max_length=25,
+        choices=RESULT_ITEM_VALIDATION,
         null=True)
 
     sender = models.CharField(
@@ -97,16 +128,94 @@ class ResultItem(BaseUuidModel):
         help_text='analyzer or instrument')
 
     source = models.CharField(
-        max_length=25,
+        max_length=250,
         null=True,
         help_text='For example, \'filename\' for CSV or \'ASTM\'')
+
+    validated = models.BooleanField(default=False, editable=False)
+
+    validation_datetime = models.DateTimeField(null=True)
 
     history = AuditTrail()
 
     def __str__(self):
-        return '{}: {}'.format(self.utestid, str(self.result))
+        return '{}: {}'.format(str(self.utestid), str(self.result))
 
     class Meta:
         app_label = 'getresults_result'
         db_table = 'getresults_resultitem'
         unique_together = ('result', 'utestid', 'result_datetime')
+
+
+class Release(BaseUuidModel):
+
+    result = models.ForeignKey(Result)
+
+    release_datetime = models.DateTimeField(
+        default=timezone.now)
+
+    status = models.CharField(
+        max_length=25,
+        choices=RELEASE_OPTIONS)
+
+    comment = models.CharField(
+        max_length=25,
+        null=True)
+
+    reference = models.CharField(
+        max_length=36,
+        default=uuid4,
+        editable=False)
+
+    history = AuditTrail()
+
+    def __str__(self):
+        return '{}: {}'.format(self.result.result_identifier, self.reference)
+
+    def save(self, *args, **kwargs):
+        self.released = True if self.release else False
+        super(Release, self).save(*args, **kwargs)
+
+    class Meta:
+        app_label = 'getresults_result'
+        db_table = 'getresults_release'
+
+
+class Validate(BaseUuidModel):
+    """Model to track the validation reference per result item in a result."""
+
+    result_item = models.ForeignKey(ResultItem)
+
+    validate_datetime = models.DateTimeField(
+        default=timezone.now)
+
+    status = models.CharField(
+        max_length=25,
+        # choices=VALIDATE_OPTIONS
+    )
+
+    comment = models.CharField(
+        max_length=25,
+        null=True)
+
+    reference = models.CharField(
+        max_length=36,
+        default=uuid4,
+        editable=False)
+
+    release = models.ForeignKey(Release, null=True, editable=False)
+
+    released = models.BooleanField(default=False)
+
+    history = AuditTrail()
+
+    def __str__(self):
+        return '{}: {}'.format(self.result_item.utestid, self.reference)
+
+    def save(self, *args, **kwargs):
+        self.released = True if self.release else False
+        super(Validate, self).save(*args, **kwargs)
+
+    class Meta:
+        app_label = 'getresults_result'
+        db_table = 'getresults_validate'

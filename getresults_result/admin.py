@@ -30,3 +30,6 @@ class ResultAdmin(admin.ModelAdmin):
     search_fields = ('result_identifier', 'analyzer_name', 'order__order_identifier')
     inlines = [ResultItemInline]
 admin_site.register(Result, ResultAdmin)
+
+
+# class ValidateAdmin(admin.ModelAdmin):

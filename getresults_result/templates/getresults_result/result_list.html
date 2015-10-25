@@ -1,0 +1,39 @@
+{% extends 'getresults_result/home.html'%}
+{% load crispy_forms_tags %}
+
+{% block section_labels%}{% endblock section_labels%}
+
+{% block section_header %}
+    <tr>
+      <th>#</th>
+      <th>Result</th>
+      <th>Panel</th>
+      <th>Analyzer</th>
+      <th>Date</th>
+      <th>Order</th>
+      <th>Validation</th>
+      <th>Release</th>
+      <th>Op</th>
+    </tr>
+{% endblock%}
+
+{% block section_rows %}
+	{% for obj in result_list %}
+	  <tr>
+	    {% if is_paginated %}
+	    	<td>{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
+	    {% else %}
+	    	<td>{{ forloop.counter }}</td>
+	   	{% endif %}
+	    <td><a href="{% url 'admin:getresults_result_result_change' obj.id %}?next={{ request.path }}">{{ obj.result_identifier }}</a></td>
+	    <td>{{ obj.order.order_panel }}</td>
+	    <td>{{ obj.analyzer_sn }}</td>
+	    <td>{{ obj.collection_datetime|date:"Y-m-d"}}</td>
+	    <td>{{ obj.order.order_identifier }}</td>
+	    <td>{% if obj.validation_status == 'validated' %}{{ obj.validation_datetime|date:"Y-m-d"}}{% else %}<a href="{{ request.path }}{{ obj.pk }}/">{{ obj.get_release_status_display }}</a>{% endif %}</td>
+	    <td>{% if obj.validation_status == 'validated' %}<a href="{{ request.path }}{{ obj.pk }}/">{{ obj.get_release_status_display }}</a>{% else %}{{ obj.get_release_status_display }}{% endif %}</td>
+	    <td>{{ obj.operator }}</td>
+	    <td></td>
+	  </tr>
+	{% endfor %}
+{% endblock%}

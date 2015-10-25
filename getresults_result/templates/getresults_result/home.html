@@ -1,0 +1,32 @@
+{% extends "section.html" %}
+{% load crispy_forms_tags %}
+
+{% block section_sidebar %}
+	<h5 class="sub-header">Results</h5>
+         <ul class="nav nav-sidebar">
+           <li><a href="/result/search/">Search</a></li>
+           <li><a href="/result/import/">Import</a></li>
+           <li><a href="/result/validate/">Validate</a></li>
+           <li><a href="/result/release/">Release</a></li>
+           <li><a href="/result/enter/">Enter</a></li>
+         </ul>
+{% endblock section_sidebar %}
+
+{% block section_labels%}
+    <div class="col-xs-6 col-sm-3 placeholder">
+      <h4>Enter</h4>
+      <span class="text-muted">Enter a result</span>
+    </div>
+    <div class="col-xs-6 col-sm-3 placeholder">
+      <h4>Import</h4>
+      <span class="text-muted">Import results from an analyzer</span>
+    </div>
+    <div class="col-xs-6 col-sm-3 placeholder">
+      <h4>Validate</h4>
+      <span class="text-muted">Validate incoming results</span>
+    </div>
+    <div class="col-xs-6 col-sm-3 placeholder">
+      <h4>Release</h4>
+      <span class="text-muted">Release one or more validated results</span>
+    </div>
+{% endblock section_labels %}
