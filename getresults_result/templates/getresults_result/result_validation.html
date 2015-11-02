@@ -1,0 +1,91 @@
+{% extends 'getresults_result/home.html'%}
+{% load crispy_forms_tags %}
+
+{% block section_labels%}{% endblock section_labels%}
+
+{% block section_body_title %}<h3 class="sub-header">{{ section_title|capfirst }}</h3>{% endblock section_body_title %}
+
+{% block section_body_one %}
+<div class="table-responsive">
+<table class="table table-striped">
+<thead>
+<th>Visit</th> 
+<th>Collection</th> 
+<th>Condition</th>
+<th>Aliquot</th>     
+<th>Ordered</th>     
+<th>Order</th>     
+</thead>
+<tbody>
+  <tr>
+     <td>{{ visit }}</td>             
+     <td>{{ order.aliquot.receive.collection_datetime|date:"Y-m-d H:i" }}</td>             
+     <td>{{ order.aliquot.aliquot_condition }}</td>
+     <td>{{ order.aliquot.aliquot_identifier }}</A></td>
+     <td>{{ order.order_datetime|date:"Y-m-d" }}</td>             
+     <td>{{ order.order_identifier }}</td>             
+    </tr>                           
+</tbody>
+</table>
+</div>
+{% endblock section_body_one %}
+
+{% block section_body_table %}
+	<form id="id_validation_form" action="{{ request.path }}" method="POST">
+	{% csrf_token %}
+	{{ validation_formset.management_form }}
+	<table class="table table-striped">
+	<thead>
+    <tr>
+	<th>#</th>
+	<th>Analyte</th>
+	<th><div class="text-right">Value</div></th>    
+	<th>Ref</th>
+	<th>Flags</th>
+	<th>Date</th>
+	<th>Validation</th>
+	<th>Comment</th>
+	<th>#</th>
+    </tr>
+	</thead>
+	<tbody>
+	{% for form in validation_formset %}
+	  <tr>
+	    {% if is_paginated %}
+	    	<td>{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
+	    {% else %}
+	    	<td>{{ forloop.counter }}</td>
+	   	{% endif %}
+		<td>{{ form.instance.utestid }}</td> 
+		<td><div class="text-right">{% if form.quantifier.value != '=' %}{{ form.quantifier.value }}{% endif %}{{ form.value.value }}&nbsp;{{ form.utestid.units|default:'' }}</div></td>
+		<td>ref?</td>
+		<td>flag?</td>
+		<td>{{ form.result_datetime.value|date:"Y-m-d" }}</td>                
+		<td>
+			<div id='div-id-validation_status'>
+			<span id="{{ accept_label }}_{{ forloop.counter|add:-1 }}" class="glyphicon glyphicon-ok text-muted" onclick="func_validation_status('{{ accept_label }}', {{ forloop.counter|add:-1 }})" ></span>
+			<span id="{{ repeat_label }}_{{ forloop.counter|add:-1 }}" class="glyphicon glyphicon glyphicon-repeat text-muted" onclick="func_validation_status('{{ repeat_label }}', {{ forloop.counter|add:-1 }})"></span>
+			<span id="{{ cancel_label }}_{{ forloop.counter|add:-1 }}" class="glyphicon glyphicon-remove text-muted" onclick="func_validation_status('{{ cancel_label }}', {{ forloop.counter|add:-1 }})"></span>
+			<span id="{{ ignore_label }}_{{ forloop.counter|add:-1 }}" class="glyphicon glyphicon-question-sign text-muted" onclick="func_validation_status('{{ ignore_label }}', {{ forloop.counter|add:-1 }})"></span>
+			<span id="id_validation_status_text_{{ forloop.counter|add:-1 }}" name="validation_status_text_{{ forloop.counter|add:-1 }}" class='text-danger bg-danger'>{{ form.status.value|default:"" }}</span>
+			</div>
+		</td>
+			{{ form }}
+	    {% if is_paginated %}
+	    	<td>{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
+	    {% else %}
+	    	<td>{{ forloop.counter }}</td>
+	   	{% endif %}
+	  </tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	<!-- validation_form  -->{% crispy validation_form %}<!-- end validation_form  -->
+	<!-- navigation_form  -->{% crispy navigation_form %}<!-- end navigation_form  -->
+	</form>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {func_set_validation_status();});	
+	</script>
+
+{% endblock section_body_table %}

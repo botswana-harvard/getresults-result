@@ -1,0 +1,49 @@
+{% extends 'getresults_result/home.html'%}
+
+{% load crispy_forms_tags %}
+
+{% block section_labels%}{% endblock section_labels%}
+
+
+{% block section_body_title %}<h3 class="sub-header">Unreleased Result for Order {{ result.order.order_identifier }}</h3>{% endblock section_body_title %}
+
+
+{% block section_header%}
+	<thead>
+    <tr>
+	<th>#</th>
+	<th>Analyte</th>
+	<th><div class="text-right">Value</div></th>    
+	<th>Ref</th>
+	<th>Flags</th>
+	<th>Date</th>
+	<th>Validation</th>
+	<th>Comment</th>
+	<th>#</th>
+    </tr>
+	</thead>
+	<tbody>
+{% endblock section_header%}
+
+
+{% block section_rows %}
+	{% for result_item in page_obj %}
+		<tr>
+		<td>{{ forloop.counter }}</td>
+		<td>{{ result_item.utestid.name }}</td>
+		<td><div class="text-right">{% if result_item.quantifier != '=' %}{{ result_item.quantifier }}{% endif %}{{ result_item.value }}&nbsp;{{ result_item.utestid.units|default:'' }}</div></td>
+		<td>ref?</td>
+		<td>flag?</td>
+		<td>{{ result_item.result_datetime|date:"Y-m-d" }}</td>                
+		<td>{{ result_item.status }}&nbsp;|&nbsp;{{ result_item.validation_datetime|date:"Y-m-d" }}&nbsp;{{ result_item.operator }}</td>                
+		<td>{{ result_item.comment }}</td>     
+  		<td>{{ forloop.counter }}</td>
+  		</tr>
+    {% endfor %}
+    </tbody>
+	</table>
+{% crispy form %}
+<table><tbody>
+{% endblock section_rows %}
+
+

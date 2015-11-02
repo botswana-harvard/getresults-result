@@ -6,6 +6,6 @@ RESULT_ITEM_STATUS = (
 
 
 RELEASE_OPTIONS = (
-    ('OK', 'Release'),
-    ('XOK', 'Do not release'),
+    ('release', 'Release'),
+    ('review', 'Review'),
 )

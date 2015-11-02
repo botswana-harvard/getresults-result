@@ -1,6 +1,8 @@
 {% extends 'getresults_result/home.html'%}
 {% load crispy_forms_tags %}
 
+{% block section_body_title %}<h3 class="sub-header">{{ section_title|capfirst }}</h3>{% endblock section_body_title %}
+
 {% block section_labels%}{% endblock section_labels%}
 
 {% block section_header %}
@@ -11,8 +13,8 @@
       <th>Analyzer</th>
       <th>Date</th>
       <th>Order</th>
-      <th>Validation</th>
-      <th>Release</th>
+      <th>Validated</th>
+      <th>Released</th>
       <th>Op</th>
     </tr>
 {% endblock%}

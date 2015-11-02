@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from getresults.admin import admin_site
 
-from .models import Result, ResultItem
+from .models import Result, ResultItem, Release
 
 
 class ResultItemInline(admin.TabularInline):
@@ -32,4 +32,6 @@ class ResultAdmin(admin.ModelAdmin):
 admin_site.register(Result, ResultAdmin)
 
 
-# class ValidateAdmin(admin.ModelAdmin):
+class ReleaseAdmin(admin.ModelAdmin):
+    pass
+admin_site.register(Release, ReleaseAdmin)

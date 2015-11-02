@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 from getresults_result.views import (
-    ResultSectionView, UnvalidatedResultsView, UnreleasedResultsView, ResultView, SaveValidationRedirectView)
+    ResultSectionView, UnvalidatedResultsView, UnreleasedResultsView,
+    ResultValidateView, ResultReleaseView, ResultReleaseHistoryView)
 
 urlpatterns = [
-    url(r'(?P<section_name>((validate)|(release)))/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', ResultView.as_view(), name='result_url'),
-    url(r'validate/$', UnvalidatedResultsView.as_view(), name='unvalidated_results_url'),
-    url(r'release/$', UnreleasedResultsView.as_view(), name='unreleased_results_url'),
+    url(r'(?P<section_title>(unvalidated))/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', ResultValidateView.as_view(), name='validated_result_url'),
+    url(r'(?P<section_title>(unreleased))/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', ResultReleaseView.as_view(), name='released_result_url'),
+    url(r'unvalidated/$', UnvalidatedResultsView.as_view(), name='unvalidated_results_url'),
+    url(r'unreleased/$', UnreleasedResultsView.as_view(), name='unreleased_results_url'),
+    url(r'history/(?P<section_title>(released))/$', ResultReleaseHistoryView.as_view(), name='released_results_history_url'),
     url(r'', ResultSectionView.as_view(), name='result_home_url'),
 ]

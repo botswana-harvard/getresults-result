@@ -1,14 +1,19 @@
 {% extends "section.html" %}
+
+{% load staticfiles %}
+
 {% load crispy_forms_tags %}
+
 
 {% block section_sidebar %}
 	<h5 class="sub-header">Results</h5>
          <ul class="nav nav-sidebar">
            <li><a href="/result/search/">Search</a></li>
            <li><a href="/result/import/">Import</a></li>
-           <li><a href="/result/validate/">Validate</a></li>
-           <li><a href="/result/release/">Release</a></li>
            <li><a href="/result/enter/">Enter</a></li>
+           <li><a href="/result/unvalidated/">Validate</a></li>
+           <li><a href="/result/unreleased/">Release</a></li>
+           <li><a href="/result/history/released/">Released</a></li>
          </ul>
 {% endblock section_sidebar %}
 
