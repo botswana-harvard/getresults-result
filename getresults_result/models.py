@@ -1,15 +1,18 @@
 from uuid import uuid4
 from django.db import models
 from django.utils import timezone
-from edc_base.audit_trail import AuditTrail
+
+from simple_history.models import HistoricalRecords as AuditTrail
 from edc_base.model.models import BaseUuidModel
+
+from getresults_identifier.result_identifier import ResultIdentifier
 from getresults_order.models import Order, Utestid
-from getresults_identifier import ResultIdentifier
 
 from .choices import RELEASE_OPTIONS
-from .constants import ACCEPT, CANCEL, REPEAT, IGNORE, PENDING, PARTIAL, VALIDATED, CANCELLED, RELEASED
-from getresults_result.constants import RELEASE, REVIEW, REPEATED
-from getresults_result.managers import ResultManager
+from .constants import (
+    ACCEPT, CANCEL, REPEAT, IGNORE, PENDING, PARTIAL, VALIDATED, CANCELLED,
+    RELEASED, RELEASE, REVIEW, REPEATED)
+from .managers import ResultManager
 
 VALIDATION_STATUS = (
     (PENDING, 'Pending'),

@@ -57,7 +57,7 @@ class ValidationForm(forms.ModelForm):
             self.fields[k].label = ''
             self.fields[k].required = False
             self.fields[k].widget = forms.HiddenInput()
-        self.fields['comment'].widget = forms.TextInput()
+        # self.fields['comment'].widget = forms.TextInput()
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_tag = False
